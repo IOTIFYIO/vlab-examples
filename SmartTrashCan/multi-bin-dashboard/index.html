@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Trashcan Dashboard</title>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Compiled and minified JavaScript -->
+
+
+
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-wrapper purple darken-2">
+            <a href="#!" class="brand-logo center">Smart Trashcan Dashboard</a>
+            <div href="#!" class="brand-logo left"><img height="30vh" style="padding-left: 10%;" src="img/IOTIFY_logo-01.png"></div>
+
+        </div>
+    </nav>
+    <div class="row">
+        <div class="col s12 m6 offset-m3">
+            <div class="card purple darken-4">
+                <div class="card-content white-text">
+                    <span class="card-title">Hi There!</span>
+                    <p>To get started, Add the first Trashcan you wish to monitor.</p>
+                </div>
+                <div class="card-action">
+                    <a class="waves-effect waves-light btn modal-trigger" href="#addTrashModal">Add</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m10 offset-m1">
+            <div id="trashcanDiv" class="white-text">
+
+            </div>
+
+        </div>
+    </div>
+
+    <div id="addTrashModal" class="modal">
+        <div class="modal-content">
+            <h4>Add new Trashcan</h4>
+            <p>A bunch of text</p>
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <i class="material-icons prefix">bookmark</i>
+                            <input id="trashcanTag" type="text" class="validate">
+                            <label for="trashcanTag">Tag</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <i class="material-icons prefix">code</i>
+                            <input id="trashcanTopic" type="tel" class="validate">
+                            <label for="trashcanTopic">Topic</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat" onclick="addTrashcan()">Add</a>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        M.AutoInit();
+
+        async function getData(url = '', data = {}) { // URL https://io.adafruit.com/api/v2/robin_iotify/feeds/test
+            // Default options are marked with *
+            const response = await fetch(url, {
+                method: 'GET', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-AIO-Key': 'aio_EjFS12AMHAozv4b4MpR37O3hcp5F'
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                redirect: 'follow', // manual, *follow, error
+                referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                //body: JSON.stringify(data) // body data type must match "Content-Type" header
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
+
+        async function sendData(url = '', data = {}) { // URL https://io.adafruit.com/api/v2/robin_iotify/feeds/test
+            // Default options are marked with *
+            const response = await fetch(url, {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-AIO-Key': 'aio_EjFS12AMHAozv4b4MpR37O3hcp5F'
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                redirect: 'follow', // manual, *follow, error
+                referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                body: JSON.stringify(data) // body data type must match "Content-Type" header
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
+
+        function addTrashcan() {
+
+            var trashcanLabel = document.getElementById("trashcanTag").value;
+            var trashcanTopic = document.getElementById("trashcanTopic").value;
+
+            var newCol = document.createElement('div');
+            newCol.className += 'col s3 m3';
+
+            var newCard = document.createElement('div');
+            newCard.className += 'card purple darken-2';
+
+            var newCardContent = document.createElement('div');
+            newCardContent.className += 'card-content white-text';
+
+            var newTitle = document.createElement('span');
+            newTitle.className += 'card-title';
+            newTitle.innerHTML = trashcanLabel;
+
+            var newP = document.createElement('p');
+            newP.innerText += "Current Trash Level : ";
+
+            var newP2 = document.createElement('p');
+
+            var newButton = document.createElement('a');
+            newButton.className += 'waves-effect waves-light btn';
+            newButton.addEventListener("click", function() {
+                clearTrash();
+            });
+            newButton.innerText = "Clear Trash";
+
+            function getLastVal() {
+                getData('https://io.adafruit.com/api/v2/robin_iotify/feeds/' + trashcanTopic, {
+
+                    })
+                    .then(data => {
+                        console.log(data.last_value); // JSON data parsed by `data.json()` call
+                        newP2.innerText = data.last_value;
+                    });
+            }
+
+            function clearTrash() {
+                sendData('https://io.adafruit.com/api/v2/robin_iotify/feeds/' + trashcanTopic + '/data', {
+                        "value": 0.00
+
+                    })
+                    .then(data => {
+                        console.log(data.last_value); // JSON data parsed by `data.json()` call
+                    });
+            }
+
+            setInterval(function() {
+                getLastVal();
+            }, 3000);
+
+            newCardContent.appendChild(newTitle);
+            newCardContent.appendChild(newP);
+            newCardContent.appendChild(newP2);
+            newCardContent.appendChild(newButton);
+            newCard.appendChild(newCardContent);
+            newCol.appendChild(newCard);
+
+            document.getElementById("trashcanDiv").appendChild(newCol);
+
+        }
+    </script>
+
+</body>
+
+</html>
